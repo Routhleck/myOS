@@ -107,9 +107,11 @@ echo "done"
 ### 2. 添加环境变量
 
 经测试完成上面的操作后,在root/cross-compiler中为编译完成的gcc交叉编译环境的二进制等文件
-将cross-compiler整个文件夹复制到用户的home文件夹中,使用
+将cross-compiler整个文件夹复制到用户的home文件夹中,打开etc/profile永久添加环境变量
 
 ```c
+sudo vi etc/profile
+# 添加以下内容    
 export PATH="/home/<你的用户名>/cross-compiler/bin:$PATH"
 ```
 
@@ -139,3 +141,44 @@ i686-elf
 >
 > libs/ 一些常用库实现
 
+# 使用GRUB引导
+
+## AT&T和Intel 汇编差异
+
+INTEL: 指令 目的数 原操作数
+AT&T: 指令 原操作数 目的数
+
+指令后缀: 
+
+> b=8, w=16, l=32, q=64
+
+src和dest:
+
+> 寄存器: %eax, %ebp
+> 立即数: $123, $-1, $0x23
+> 内存引用: 0x007c0, (%esp)
+
+## 声明os是multiboot兼容的
+
+一个相当成熟的 Bootloader 规范
+省去了相当的麻烦：比如加载内核，开启 A20 总线（ Tricky! ），进入保护模
+式,直接进入内核开发
+
+![image-20221117233737146](/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221117233737146.png)
+
+## 加载后处在的状态
+
+> 已定义(节选)
+>
+> %EAX = 0x2BADB002 (magic number)
+> %EBX = Bootloader 信息表的物理地址
+> %{C|D|E|F|G|S}S = 0x0 (段寄存器)
+> A20 ：已打开 (A20总线打开)
+> %CR0 = (%CR0 & 0x7FFFFFFF) | 0x1 (控制寄存器最高位清零 PG=0保护模式,最低位置1 PE=1分页开启)
+> %EFLAGS = %EFLAGS & 0xFFFEFEFF (IF=VM=0 关闭所有硬件中断)
+
+> 未定义(需要自己设置)
+>
+> %ESP:调用栈地址(重要)
+> %GDTR, %IDTR: 描述表,中断表
+> **避免对%{C|D|E|F|G|S}的操作,否则引发#GP异常**
