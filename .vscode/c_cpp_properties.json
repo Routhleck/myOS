@@ -13,7 +13,6 @@
             "compilerPath": "/home/routhleck/cross-compiler/bin/i686-elf-gcc",
             "cStandard": "gnu99",
             "intelliSenseMode": "gcc-x86",
-            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

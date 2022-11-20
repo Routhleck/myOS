@@ -9,10 +9,12 @@
     /* the stack must be aligned at 16 bytes boundary */
     .align 16
     stack_bottom:
-    .skip 16384, 0
+        .skip 16384, 0
     stack_top:
 
 .section .text
+    .global start_
+    .type start_, @function
     start_:
         movl $stack_top, %esp
         /*

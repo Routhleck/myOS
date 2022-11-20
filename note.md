@@ -182,3 +182,17 @@ src和dest:
 > %ESP:调用栈地址(重要)
 > %GDTR, %IDTR: 描述表,中断表
 > **避免对%{C|D|E|F|G|S}的操作,否则引发#GP异常**
+
+# 简单显示
+
+**VGA文本模式**
+
+文本缓冲区（显存）起始点： 0xB8000 （注意，物理地址！）
+缓冲区大小： 2×W×H 字节 (W= 屏幕宽度，H= 高度，以字符为单位
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120115152299.png" alt="image-20221120115152299" style="zoom:50%;" />
+
+# 链接器配置
+
+将这些占位符换成具体的地址保证multiboot在最开头(至少前8KB处)
+配置链接器行为

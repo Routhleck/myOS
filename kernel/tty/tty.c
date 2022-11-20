@@ -18,17 +18,27 @@ void tty_set_theme(vga_attributes fg, vga_attributes bg) {
 
 // 放字符
 void tty_put_char(char chr) {
-    *(buffer + TTY_COLUMN + TTY_ROW * TTY_WIDTH) = theme_color |chr;
-    TTY_COLUMN++;
-
-    if (TTY_COLUMN >= TTY_WIDTH) {
+    if (chr == '\n') {
         TTY_COLUMN = 0;
         TTY_ROW++;
-        if (TTY_ROW >= TTY_HEIGHT) {
-            tty_scroll_up();
-            TTY_ROW--;        
+    }
+    else if (chr == '\r')
+    {
+        TTY_COLUMN = 0;
+    }
+    else {
+        *(buffer + TTY_COLUMN + TTY_ROW * TTY_WIDTH) = (theme_color | chr);
+        TTY_COLUMN++;
+        if (TTY_COLUMN >= TTY_WIDTH) {
+            TTY_COLUMN = 0;
+            TTY_ROW++;
         }
     }
+
+    if (TTY_ROW >= TTY_HEIGHT) {
+        tty_scroll_up();
+    }
+    
     
 }
 
