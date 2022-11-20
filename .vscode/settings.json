@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "interrupts.h": "c",
+        "idt.h": "c"
+    }
+}

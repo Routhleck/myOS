@@ -252,3 +252,7 @@ IDT: 64bits的数组
 指令:lidt
 
 和lgdt一样
+
+内联汇编注入iret
+
+**设计模式** - 门面模式(Facade)
