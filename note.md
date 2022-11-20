@@ -196,3 +196,34 @@ src和dest:
 
 将这些占位符换成具体的地址保证multiboot在最开头(至少前8KB处)
 配置链接器行为
+
+# 安装GDT
+
+通过 段基地址 + 段内偏移，我们可以计算出段内任何一个数据的 线性地址
+
+## 全局描述符GDT
+
+全局描述符表是一块内存空间，最大 64KB
+全局描述符的地址指针会被存放在一个特殊的寄存器里—— GDTR
+
+## 段描述符
+
+段描述符描述了这个段的特性
+每个段描述符为 8 个字节，即两个DWORD
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120160040793.png" alt="image-20221120160040793" style="zoom:50%;" />
+
+## 特权级
+
+特权级有： 0 ， 1 ， 2 ， 3 这几个等级。
+• 0 级，最中心的圆，所以权限最高。
+• 往外特权级依次递增，权限递减
+用户程序在 3 级，我们的内核会运行在 0 级。中间的等级则留给其他驱动程序或者一些服务。
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120160154947.png" alt="image-20221120160154947" style="zoom:50%;" />
+
+lgdt : 加载GDT的地址到GDTR
+
+用法: lgdt(%reg)
+寄存器%reg的值是GDTR的值的地址
+

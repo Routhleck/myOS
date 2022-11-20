@@ -23,6 +23,25 @@
         */
         call _kernel_init
 
+        subl $0x6, %esp
+        movl $_gdt, 2(%esp)
+        movw _gdt_limit, %ax
+        movw %ax, (%esp)
+        lgdt (%esp)
+        addl $0x6, %esp
+
+        movw $0x10, %cx
+        movw %cx, %es
+        movw %cx, %ds
+        movw %cx, %fs
+        movw %cx, %gs
+        movw %cx, %ss
+
+        pushw $0x08
+        pushl $_after_gdt
+        retf
+
+    _after_gdt:
         pushl %ebx
         call _kernel_main
 

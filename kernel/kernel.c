@@ -1,4 +1,5 @@
 #include <routhleck/tty/tty.h>
+#include <routhleck/arch/gdt.h>
 
 void _kernel_init() {
     // TODO
