@@ -6,23 +6,27 @@
     .long CHECKSUM(MB_ALIGNED_4K_MEM_MAP)
 
 .section .bss
-    /* the stack must be aligned at 16 bytes boundary */
+    /* According to System V ABI, the stack must be aligned at 16 bytes boundary */
     .align 16
     stack_bottom:
-        .skip 16384, 0
+        .skip 16318, 0
     stack_top:
 
 .section .text
     .global start_
-    .type start_, @function
+    .type start_, @function     /* Optional, this just give the 
+                                 * linker more knowledge about the label 
+                                 */
     start_:
         movl $stack_top, %esp
-        /*
-            TODO:
-                kernel init
+        /* 
+            TODO: kernel init
+                1. Load GDT
+                2. Load IDT
+                3. Enable paging
         */
         call _kernel_init
-
+        
         subl $0x6, %esp
         movl $_gdt, 2(%esp)
         movw _gdt_limit, %ax

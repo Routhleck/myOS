@@ -227,3 +227,28 @@ lgdt : 加载GDT的地址到GDTR
 用法: lgdt(%reg)
 寄存器%reg的值是GDTR的值的地址
 
+# 中断
+
+标志着某些事情发生,需要cpu去救场
+e.g. 致命错误,键盘/鼠标输入,u盘插入,某些系统调用
+
+## 忽略(mask)中断
+
+cli(clear interrupt flag)
+sti(set interrupt flag)
+
+## 中断服务过程与中断描述表
+
+为每个中断写一个 **处理函数(中断服务过程ISR)**, 编成 **一张表中断描述表IDT**
+
+IDT: 64bits的数组
+
+描述符的索引代表 **中断向量号**
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120212846499.png" alt="image-20221120212846499" style="zoom:50%;" />
+
+## 安装IDT
+
+指令:lidt
+
+和lgdt一样
