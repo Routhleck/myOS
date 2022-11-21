@@ -256,3 +256,17 @@ IDT: 64bits的数组
 内联汇编注入iret
 
 **设计模式** - 门面模式(Facade)
+
+# 分页与内核重映射
+
+## 联级分页
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145342455.png" alt="image-20221121145342455" style="zoom:50%;" />
+
+## 内核重映射
+
+加载流程
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145744604.png" alt="image-20221121145744604" style="zoom:50%;" />
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145931490.png" alt="image-20221121145931490" style="zoom:50%;" />

@@ -1,5 +1,5 @@
-#ifndef _STRING_H
-#define _STRING_H 1
+#ifndef __ROUTHLECK_STRING_H__
+#define __ROUTHLECK_STRING_H__
 
 #include <stddef.h>
 
@@ -17,5 +17,8 @@ memset(void*, int, size_t);
 
 size_t
 strlen(const char* str);
+
+char*
+strcpy(char* dest, const char* src);
 
 #endif
