@@ -3,8 +3,9 @@
 char*
 strcpy(char* dest, const char* src) {
     char c;
-    unsigned int i =0;
-    while ((c = src[i])) {
+    unsigned int i = 0;
+    while ((c = src[i]))
+    {
         dest[i] = c;
         i++;
     }

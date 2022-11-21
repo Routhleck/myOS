@@ -1,5 +1,5 @@
-#ifndef __ROUTHLECK_STRING_H__
-#define __ROUTHLECK_STRING_H__
+#ifndef __ROUTHLECK_STRING_H
+#define __ROUTHLECK_STRING_H
 
 #include <stddef.h>
 
@@ -21,4 +21,4 @@ strlen(const char* str);
 char*
 strcpy(char* dest, const char* src);
 
-#endif
+#endif /* __LUNAIX_STRING_H */

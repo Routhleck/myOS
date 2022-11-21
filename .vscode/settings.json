@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "interrupts.h": "c",
-        "idt.h": "c"
+        "page.h": "c",
+        "multiboot.h": "c",
+        "idt.h": "c",
+        "constants.h": "c"
     }
 }

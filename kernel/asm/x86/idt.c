@@ -1,6 +1,6 @@
-#include <routhleck/arch/idt.h>
-#include <routhleck/interrupts/interrupts.h>
-#include <routhleck/interrupts/types.h>
+#include <arch/x86/idt.h>
+#include <arch/x86/interrupts.h>
+#include <arch/x86/types.h>
 #include <stdint.h>
 
 #define IDT_ENTRY 32

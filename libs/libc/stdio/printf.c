@@ -13,5 +13,6 @@ printf(char* fmt, ...)
     __sprintf_internal(buffer, fmt, args);
     va_end(args);
 
+    // 啊哈，直接操纵framebuffer。日后须改进（FILE* ?）
     tty_put_str(buffer);
 }
