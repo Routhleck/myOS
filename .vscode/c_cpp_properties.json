@@ -8,7 +8,8 @@
             ],
             "compilerArgs": [
                 "-ffreestanding",
-                "-D__ARCH_IA32"
+                "-D__ARCH_IA32",
+                "-D__LUNAIXOS_DEBUG__"
             ],
             "defines": [],
             "compilerPath": "/home/routhleck/cross-compiler/bin/i686-elf-gcc",

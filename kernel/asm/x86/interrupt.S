@@ -11,6 +11,8 @@
 
 .section .text
     isr_template 0
+    isr_template 13, no_error_code=0
+    isr_template 14, no_error_code=0
 
     interrupt_wrapper:
 

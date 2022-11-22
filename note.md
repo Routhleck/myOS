@@ -270,3 +270,239 @@ IDT: 64bits的数组
 <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145744604.png" alt="image-20221121145744604" style="zoom:50%;" />
 
 <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145931490.png" alt="image-20221121145931490" style="zoom:50%;" />
+
+# 内存管理
+
+## 设计目标
+
+## **物理内存管理**
+
+分配可用叶(用于映射)
+对合适的页进行Swap操作
+
+记录所有物理页的可用性
+
+4GiB大小 = 2^20 个记录
+
+**位图bitmap**
+0 - 可用, 1 - 已占用
+需要 128Ki的空间
+
+## **虚拟内存管理**
+
+管理映射 - 增删改查
+
+- 增： VA <---> PA
+- 删：删除映射（删除对应表项，释放占用的物理页，刷新 TLB ）
+- 改：修改映射
+- 查： VA ----> PA
+
+**虚拟地址解决方法:递归映射**
+
+# malloc
+
+## 堆空间
+
+动态地,按需创建的空间
+
+规定，所有分配的空间大小必须为 4 的倍数（地址 4 字节对齐）
+
+## 如何处理虚碎片
+
+Implicit Free List
+
+边界标签法（ Boundary Tag ）——在头尾加上标签，写上一些必要元数据
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122123109348.png" alt="image-20221122123109348" style="zoom:50%;" />
+
+# 外中断处理
+
+## PIC 可编程中断控制器
+
+决定CPU接下来要处理的中断
+帮助CPU缓存未处理的中断
+拓展CPU的中断Pin
+
+## APIC
+
+为多核心处理器打造,为单个核心指定不同的中断优先级
+
+### LVT 本地向量表
+
+一组APIC内置寄存器,定义 **APIC本地中断**至CPU中断向量号的映射
+
+## Local APIC
+
+进阶版PIC,专职于服务外部中断事件
+允许多个IOAPIC
+单个多达24个IRQ
+
+## 初始化APIC
+
+1. 禁用中断(cli)
+2. 禁用8259PIC
+3. 硬启用LAPIC
+4. 初始化LAPIC
+5. 设置中断优先级
+6. 初始化LVT
+7. 软启用LAPIC
+
+### 使用Local APIC
+
+- 硬件层面启动
+  特殊寄存器:IA32_APIC_BASE
+
+- 禁用8259PIC
+
+- 设置中断优先级
+  <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122205651423.png" alt="image-20221122205651423" style="zoom:50%;" />
+- 初始化LVT
+- 软启用Local APIC
+- 初始化I/O APIC
+- 映射IRQ  (interrupt request)
+  <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122224610267.png" alt="image-20221122224610267" style="zoom:50%;" />
+
+# APIC计时器与RTC
+
+向CPU发送固定间隔的,周期性的中断
+
+- 告诉CPU什么时候该进行任务调度
+- 实现更加精确地等待与延时
+
+## APIC自带Timer
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231513865.png" alt="image-20221122231513865" style="zoom:50%;" />
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231710068.png" alt="image-20221122231710068" style="zoom:50%;" />
+
+F_timer = F_CPU / k
+
+### 手动测量CPU时钟频率
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231911158.png" alt="image-20221122231911158" style="zoom:50%;" />
+
+## 操作步骤
+
+1. 安装 RTC 与 LAPIC Timer 的临时中断服务例程
+2. 配置 RTC 的频率（我们使用 1024Hz ）
+3. 打开中断（ sti ）
+4. 写入 ICR （随便找个很大的值）
+5. PIE 置位
+6. 阻塞
+7. 当 LAPIC Timer 触发后，计算频率并关闭 RTC
+8. 清除掉临时的例程
+
+# 键盘驱动
+
+1. 初始化8042控制器
+2. 将键盘的硬件原数据进行抽象封装
+3. 将封装好的键盘事件递送到上层
+
+# 多进程
+
+## 进程的状态
+
+- 运行：正在使用 CPU
+- 暂停：可以随时被调度
+- 阻塞：只有当特定条件满足时，才会要么加载进 CPU ，要么进入“暂停”状态
+- 终止（僵尸）：已终止，但仍存留在进程表里，等待用户读取返回代码，不能被调度，并且 pid 不能被回收。
+- 摧毁：进程已被释放，其 pid 可以被回收重用。
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122235658847.png" alt="image-20221122235658847" style="zoom:50%;" />
+
+## 并发物理内存访问
+
+内存共享和引用计数
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122235908676.png" alt="image-20221122235908676" style="zoom:50%;" />
+
+### 记录权限
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123000234044.png" alt="image-20221123000234044" style="zoom:50%;" />
+
+### 共享内核运行时
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123000844284.png" alt="image-20221123000844284" style="zoom:50%;" />
+
+## Fork
+
+fork() 的功能就是将进程一分为二。
+fork() 是仅有的能返回两次的函数
+
+### 实现fork
+
+把父进程的一切复制过来
+注意:
+
+- pid 等进程唯一的属性不能直接复制过来
+- 任何栈空间需要进行**完整**拷贝
+- 对于任何读共享的内存区域，需要同时将父进程和子进程的对应映射标记为只读，从而保证 COW 的应用
+
+### 另一种:posix_spawn()
+
+从零创建一个进程 :
+地址空间直接派生自内核
+只需分配用户栈区域和代码区域。
+比 fork 要轻量许多
+
+## 进程内的 上下文切换
+
+切换操作模式 => 切换所使用的栈
+
+当 ISR 的特权级 (RPL) 与当前特权级 (CPL) 不一致时……
+1. CPU 切换到内核栈
+2. CPU 推入先前的使用的 SS 和 ESP
+
+### 系统调用
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123003040310.png" alt="image-20221123003040310" style="zoom:50%;" />
+
+# 信号
+
+
+
+# PCI
+
+外围设备互联总线
+
+## PCI配置空间
+
+一组 32 位寄存器组成的区域。
+大小 256 字节（ 64 个寄存器）。
+在前 64 字节包含了一个头部。
+包括了设备的所有信息以及 PCI 相关设置
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123011442004.png" alt="image-20221123011442004" style="zoom:50%;" />
+
+## 总线扫描
+
+穷举出所有可能的设备地址，进行探测。
+通过检测生产商 ID 来确定设备是否存在。
+0xFFFF 则为不存在。
+
+## 初始化PCI设备
+
+command<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123011945984.png" alt="image-20221123011945984" style="zoom:50%;" />
+
+## 操作PCI设备
+
+不同的设备会提供不同的寄存器， OS 通过往这些寄存器里写值，向设备发送命令。
+设备相关的寄存器的基地址会在 **BAR** 中给出：<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012028507.png" alt="image-20221123012028507" style="zoom:50%;" />
+
+### 设置中断
+
+一个设备需要通过中断去和 CPU 通讯。
+Interrupt Line ：使用的 IRQ
+可以通过 ACPI 查询到 IRQ → IOAPIC针脚的映射关系，从而通过 IOAPIC 来管理这些中断。
+
+### MSI(信息中断)
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012552066.png" alt="image-20221123012552066" style="zoom:50%;" />
+
+#### 启用MSI功能
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012630392.png" alt="image-20221123012630392" style="zoom:50%;" />
+
+#### 让CPU识别MSI
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012658594.png" alt="image-20221123012658594" style="zoom:50%;" />

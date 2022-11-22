@@ -3,6 +3,8 @@
         "page.h": "c",
         "multiboot.h": "c",
         "idt.h": "c",
-        "constants.h": "c"
+        "constants.h": "c",
+        "vmm.h": "c",
+        "spike.h": "c"
     }
 }
