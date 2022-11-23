@@ -506,3 +506,147 @@ Interrupt Line ：使用的 IRQ
 #### 让CPU识别MSI
 
 <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012658594.png" alt="image-20221123012658594" style="zoom:50%;" />
+
+# SATA
+
+## 如何读写磁盘
+
+### PIO
+
+Programmed Input/Output
+
+1. CPU 下达指令
+2. 磁盘响应指令，**通过 CPU** ，向内存拿取或写入数据
+
+### DMA
+
+Direct Memory Access
+
+1. CPU 下达指令
+2. 磁盘响应指令，根据事先同 CPU 商定好的地址，**通过 DMA 控制器**，直接向内存拿取或写入数据。
+
+## SATA协议: FIS
+
+Frame Information Structure
+
+SATA标准定义了如下的FIS:
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123185813992.png" alt="image-20221123185813992" style="zoom:50%;" />
+
+### LBA与CHS
+
+SATA 控制器将物理扇区映射到逻辑扇区
+软件可通过逻辑扇区的编号访问扇区
+
+### DMA读扇区
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123190410586.png" alt="image-20221123190410586" style="zoom:50%;" />
+
+### DMA写扇区
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123190432054.png" alt="image-20221123190432054" style="zoom:50%;" />
+
+### SATA对SCSI的封装: PACKET命令
+
+SATA 协议使用 PACKET 命令，对 SCSI 命令进行封装，而后由SATA 控制器使用 SCSI 协议进行转发
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123192105565.png" alt="image-20221123192105565" style="zoom:50%;" />
+
+## AHCI
+
+一个单独的芯片，至少可带 32 个 SATA 控制器。
+是对 SATA 协议的一个更高层抽象。
+每个 SATA 控制器对应到 AHCI 的一个端口上。
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123192417728.png" alt="image-20221123192417728" style="zoom:50%;" />
+
+### AHCI与SATA的通讯
+
+操作系统分配内存(由命令槽构成命令队列)
+
+### AHCI初始化工作
+
+AHCI 的标准要求软件至少执行以下几个步骤（ 10.1.2 ），以完成 AHCI
+的初始化
+1. GHC 寄存器的 AE 位置位，表明我们使用的是 AHCI模式，而不是 IDE 兼容模式。
+2. 读取 PI 寄存器，找出所有已开启的端口
+3. 读取 CAP 寄存器的 NCS 字段，找出每个端口的命令队列可用的长度（从 0 开始算）。对于每一个端口：
+  1. 进行端口重置
+  2. 分配操作空间，设置 PxCLB 和 PxFB
+  3. 将 PxSERR 寄存器清空
+  4. 将需要使用的中断通过 PxIE 寄存器开启
+4. 最后将 GHC 的 IE 位置位，从而使得 HBA 可以向CPU 发送中断
+
+需要映射寄存器到虚拟内存
+
+<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123193703723.png" alt="image-20221123193703723" style="zoom:50%;" />
+
+## SLAB分配器
+
+slab分配器基于对象进行管理，同样类型的对象归为一类(如进程描写叙述符就是一类)，每当要申请这样一个对象。slab分配器就分配一个空暇对象出去，而当要释放时，将其又一次保存在slab分配器中，而不是直接返回给伙伴系统。
+
+## 探测磁盘信息
+
+使用 IDENTIFY DEVICE 或 IDENTIFY PACKET DEVICE 去探测磁盘信息
+两个命令均返回一个长度为 512 字节的，结构相同的数据块儿，包含该设备的所有信息。
+每个信息以字段形式存储，每个字段的长度字对齐（ 2 个字节）
+
+- 磁盘生产商名称
+- 磁盘型号
+- 最大可寻址逻辑扇区数 *
+- 逻辑扇区大小 *
+- 每个逻辑扇区包含的物理扇区数 *
+- 磁盘唯一编号 (WWN)
+- (ATAPI) 设备要求的 CDB 大小
+- 是否支持 48 位 LBA
+
+## 扇区读写
+
+### 读写ATA 磁盘的扇区
+
+如果磁盘支持 28 位 LBA ： READ/WRITE DMA
+如果磁盘支持 48 位 LBA ： READ/WRITE DMA (EXT)->可向下兼容 READ/WRITE DMA
+
+每个命令需要三个参数：
+1. 起始 LBA 地址 → LBA
+2. 需要读入的逻辑块数量 → count
+3. 数据的存取位置 → buffer
+
+## 读写 ATAPI 设备的扇区
+
+需要使用 SCSI 协议的命令，使用 PACKET 命令做封装
+如果磁盘支持 28 位 LBA ： 12 字节长度的 CDB
+如果磁盘支持 48 位 LBA ： 16 字节长度的 CDB
+
+和 ATA 设备的一样，也是需要三个参数：
+1. 起始 LBA
+2. 操作的逻辑块数
+3. 存取缓冲区位置
+
+# 文件系统
+
+实现虚拟文件系统
+
+1. 构造一个虚拟文件树来表示文件层级关系
+2. 实现文件的十四个操作,并提供相关的系统调用
+3. 实现文件系统的挂载,以及挂载点的管理
+4. 对上述的十四个操作进行抽象,封装成接口. 允许22实际文件系统进行实现
+5. 实现一个文件系统管理器(工厂), 从而开始初始化实际文件系统驱动的实例
+
+## 路径游走
+
+### 虚拟文件树的动态生长
+
+目录节点将会随着游走的过程动态的被创建
+对应的文件节点将会随着目录节点一起被创建创建
+
+**递归**
+
+### 目录节点缓存方案
+
+键值对:文件名为键,目录节点实例为值 -- 哈系表
+
+## 挂载与文件子树
+
+### 树的递归性质之应用
+
