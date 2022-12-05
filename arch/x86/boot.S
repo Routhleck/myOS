@@ -2,7 +2,7 @@
 #include <arch/x86/boot/multiboot.h>
 
 #define MB_FLAGS    MULTIBOOT_MEMORY_INFO | MULTIBOOT_PAGE_ALIGN
-#define KPG_SIZE    24*1024
+#define KPG_SIZE    10*4096
 
 .section .multiboot
     .long MULTIBOOT_MAGIC
@@ -18,15 +18,15 @@
     /* 根据System V ABI，栈地址必须16字节对齐 */
     /* 这里只是一个临时栈，在_hhk_init里面我们会初始化内核专用栈 */
     stack_bottom:
-        .skip 16318, 0
-    stack_top:
+        .skip 4096, 0
+    __stack_top:
 
 
 /* 
     1 page directory, 
-    5 page tables:
+    9 page tables:
         1. Mapping reserved area and hhk_init
-        2-5. Remapping the kernels
+        2-9. Remapping the kernels
 */
 
 .section .kpg
@@ -44,7 +44,7 @@
         cld
         # 确保屏蔽所有外中断，直到我们准备好PIC为止
         cli
-        movl $stack_top, %esp
+        movl $__stack_top, %esp
 
         subl $16, %esp
 
@@ -77,10 +77,16 @@
         andl $0xfffff000, %eax      # 有点多余，但写上还算明白一点
         movl %eax, %cr3
 
-        /* 开启分页与地址转换 (CR0.PG=1) */
         movl %cr0, %eax
-        orl $0x80000000, %eax
+        orl $0x80010000, %eax   /* 开启分页与地址转换 (CR0.PG=1, CR0.WP=1) */
+        andl $0xfffffffb, %eax
+        orl $0x2, %eax          /* 启用x87 FPU (CR0.MP=1, CR0.EM=0) */
         movl %eax, %cr0
+
+        movl %cr4, %eax
+        orl $0x600, %eax
+        movl %eax, %cr4         /* CR4.OSFXSR=1, CR4.OSXMMEXCPT=1 */
+                                /* x87 FPU 已配置 */
 
         addl $16, %esp
 

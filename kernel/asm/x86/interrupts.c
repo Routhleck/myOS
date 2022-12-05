@@ -1,32 +1,46 @@
 #include <arch/x86/interrupts.h>
-#include <routhleck/assert.h>
-#include <libc/stdio.h>
+#include <arch/x86/tss.h>
 
-void panic (const char* msg, isr_param* param) {
-    tty_set_theme(VGA_COLOR_WHITE, VGA_COLOR_RED);
-    tty_clear_line(10);
-    tty_clear_line(11);
-    tty_clear_line(12);
-    tty_set_cpos(0, 11);
-    printf(" INT %u: (%x) [0x%x: 0x%x] %s", param->vector, param->err_code, param->cs, param->eip, msg);
-    while(1);
-}
+#include <hal/apic.h>
+#include <hal/cpu.h>
 
-void 
-interrupt_handler(isr_param* param) {
-    switch (param->vector)
-    {
-        case 0:
-            panic("Division by 0", param);
-            break;  // never reach
-        case FAULT_GENERAL_PROTECTION:
-            panic("General Protection", param);
-            break;  // never reach
-        case FAULT_PAGE_FAULT:
-            panic("Page Fault", param);
-            break;  // never reach
-        default:
-            panic("Unknown Interrupt", param);
-            break;  // never reach
+#include <lunaix/isrm.h>
+#include <lunaix/mm/page.h>
+#include <lunaix/mm/vmm.h>
+#include <lunaix/process.h>
+#include <lunaix/sched.h>
+#include <lunaix/syslog.h>
+#include <lunaix/tty/tty.h>
+
+LOG_MODULE("INTR")
+
+extern x86_page_table* __kernel_ptd;
+
+void
+intr_handler(isr_param* param)
+{
+    __current->intr_ctx = *param;
+
+    isr_param* lparam = &__current->intr_ctx;
+
+    if (lparam->vector <= 255) {
+        isr_cb subscriber = isrm_get(lparam->vector);
+        subscriber(param);
+        goto done;
     }
+
+    kprint_panic("INT %u: (%x) [%p: %p] Unknown",
+                 lparam->vector,
+                 lparam->err_code,
+                 lparam->cs,
+                 lparam->eip);
+
+done:
+    // for all external interrupts except the spurious interrupt
+    //  this is required by Intel Manual Vol.3A, section 10.8.1 & 10.8.5
+    if (lparam->vector >= IV_EX && lparam->vector != APIC_SPIV_IV) {
+        apic_done_servicing();
+    }
+
+    return;
 }

@@ -1,5 +1,5 @@
-#ifndef __ROUTHLECK_GDT_H 
-#define __ROUTHLECK_GDT_H 1
+#ifndef __LUNAIX_GDT_H 
+#define __LUNAIX_GDT_H 1
 
 #define SD_TYPE(x)              (x << 8)
 #define SD_CODE_DATA(x)         (x << 12)
@@ -48,6 +48,8 @@
 #define SEG_R3_DATA         SD_TYPE(SEG_DATA_RDWR) | SD_CODE_DATA(1) | SD_DPL(3) | \
                             SD_PRESENT(1) | SD_AVL(0) | SD_64BITS(0) | SD_32BITS(1) | \
                             SD_4K_GRAN(1)
+
+#define SEG_TSS             SD_TYPE(9) | SD_DPL(0) | SD_PRESENT(1)
                             
 
 void

@@ -164,7 +164,7 @@ src和dest:
 省去了相当的麻烦：比如加载内核，开启 A20 总线（ Tricky! ），进入保护模
 式,直接进入内核开发
 
-![image-20221117233737146](/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221117233737146.png)
+![image-20221117233737146](note.assets/image-20221117233737146.png)
 
 ## 加载后处在的状态
 
@@ -190,7 +190,7 @@ src和dest:
 文本缓冲区（显存）起始点： 0xB8000 （注意，物理地址！）
 缓冲区大小： 2×W×H 字节 (W= 屏幕宽度，H= 高度，以字符为单位
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120115152299.png" alt="image-20221120115152299" style="zoom:50%;" />
+<img src="/note.assets/image-20221120115152299.png" alt="image-20221120115152299" style="zoom:50%;" />
 
 # 链接器配置
 
@@ -211,7 +211,7 @@ src和dest:
 段描述符描述了这个段的特性
 每个段描述符为 8 个字节，即两个DWORD
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120160040793.png" alt="image-20221120160040793" style="zoom:50%;" />
+<img src="note.assets/image-20221120160040793.png" alt="image-20221120160040793" style="zoom:50%;" />
 
 ## 特权级
 
@@ -220,7 +220,7 @@ src和dest:
 • 往外特权级依次递增，权限递减
 用户程序在 3 级，我们的内核会运行在 0 级。中间的等级则留给其他驱动程序或者一些服务。
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120160154947.png" alt="image-20221120160154947" style="zoom:50%;" />
+<img src="/note.assets/image-20221120160154947.png" alt="image-20221120160154947" style="zoom:50%;" />
 
 lgdt : 加载GDT的地址到GDTR
 
@@ -245,7 +245,7 @@ IDT: 64bits的数组
 
 描述符的索引代表 **中断向量号**
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221120212846499.png" alt="image-20221120212846499" style="zoom:50%;" />
+<img src="note.assets/image-20221120212846499.png" alt="image-20221120212846499" style="zoom:50%;" />
 
 ## 安装IDT
 
@@ -261,15 +261,15 @@ IDT: 64bits的数组
 
 ## 联级分页
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145342455.png" alt="image-20221121145342455" style="zoom:50%;" />
+<img src="note.assets/image-20221121145342455.png" alt="image-20221121145342455" style="zoom:50%;" />
 
 ## 内核重映射
 
 加载流程
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145744604.png" alt="image-20221121145744604" style="zoom:50%;" />
+<img src="note.assets/image-20221121145744604.png" alt="image-20221121145744604" style="zoom:50%;" />
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221121145931490.png" alt="image-20221121145931490" style="zoom:50%;" />
+<img src="note.assets/image-20221121145931490.png" alt="image-20221121145931490" style="zoom:50%;" />
 
 # 内存管理
 
@@ -313,7 +313,7 @@ Implicit Free List
 
 边界标签法（ Boundary Tag ）——在头尾加上标签，写上一些必要元数据
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122123109348.png" alt="image-20221122123109348" style="zoom:50%;" />
+<img src="note.assets/image-20221122123109348.png" alt="image-20221122123109348" style="zoom:50%;" />
 
 # 外中断处理
 
@@ -355,12 +355,12 @@ Implicit Free List
 - 禁用8259PIC
 
 - 设置中断优先级
-  <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122205651423.png" alt="image-20221122205651423" style="zoom:50%;" />
+  <img src="note.assets/image-20221122205651423.png" alt="image-20221122205651423" style="zoom:50%;" />
 - 初始化LVT
 - 软启用Local APIC
 - 初始化I/O APIC
 - 映射IRQ  (interrupt request)
-  <img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122224610267.png" alt="image-20221122224610267" style="zoom:50%;" />
+  <img src="note.assets/image-20221122224610267.png" alt="image-20221122224610267" style="zoom:50%;" />
 
 # APIC计时器与RTC
 
@@ -371,15 +371,15 @@ Implicit Free List
 
 ## APIC自带Timer
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231513865.png" alt="image-20221122231513865" style="zoom:50%;" />
+<img src="note.assets/image-20221122231513865.png" alt="image-20221122231513865" style="zoom:50%;" />
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231710068.png" alt="image-20221122231710068" style="zoom:50%;" />
+<img src="note.assets/image-20221122231710068.png" alt="image-20221122231710068" style="zoom:50%;" />
 
 F_timer = F_CPU / k
 
 ### 手动测量CPU时钟频率
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122231911158.png" alt="image-20221122231911158" style="zoom:50%;" />
+<img src="note.assets/image-20221122231911158.png" alt="image-20221122231911158" style="zoom:50%;" />
 
 ## 操作步骤
 
@@ -414,15 +414,15 @@ F_timer = F_CPU / k
 
 内存共享和引用计数
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221122235908676.png" alt="image-20221122235908676" style="zoom:50%;" />
+<img src="note.assets/image-20221122235908676.png" alt="image-20221122235908676" style="zoom:50%;" />
 
 ### 记录权限
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123000234044.png" alt="image-20221123000234044" style="zoom:50%;" />
+<img src="note.assets/image-20221123000234044.png" alt="image-20221123000234044" style="zoom:50%;" />
 
 ### 共享内核运行时
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123000844284.png" alt="image-20221123000844284" style="zoom:50%;" />
+<img src="note.assets/image-20221123000844284.png" alt="image-20221123000844284" style="zoom:50%;" />
 
 ## Fork
 
@@ -455,7 +455,7 @@ fork() 是仅有的能返回两次的函数
 
 ### 系统调用
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123003040310.png" alt="image-20221123003040310" style="zoom:50%;" />
+<img src="note.assets/image-20221123003040310.png" alt="image-20221123003040310" style="zoom:50%;" />
 
 # 信号
 
@@ -472,7 +472,7 @@ fork() 是仅有的能返回两次的函数
 在前 64 字节包含了一个头部。
 包括了设备的所有信息以及 PCI 相关设置
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123011442004.png" alt="image-20221123011442004" style="zoom:50%;" />
+<img src="note.assets/image-20221123011442004.png" alt="image-20221123011442004" style="zoom:50%;" />
 
 ## 总线扫描
 
@@ -482,12 +482,12 @@ fork() 是仅有的能返回两次的函数
 
 ## 初始化PCI设备
 
-command<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123011945984.png" alt="image-20221123011945984" style="zoom:50%;" />
+command<img src="note.assets/image-20221123011945984.png" alt="image-20221123011945984" style="zoom:50%;" />
 
 ## 操作PCI设备
 
 不同的设备会提供不同的寄存器， OS 通过往这些寄存器里写值，向设备发送命令。
-设备相关的寄存器的基地址会在 **BAR** 中给出：<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012028507.png" alt="image-20221123012028507" style="zoom:50%;" />
+设备相关的寄存器的基地址会在 **BAR** 中给出：<img src="note.assets/image-20221123012028507.png" alt="image-20221123012028507" style="zoom:50%;" />
 
 ### 设置中断
 
@@ -497,15 +497,15 @@ Interrupt Line ：使用的 IRQ
 
 ### MSI(信息中断)
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012552066.png" alt="image-20221123012552066" style="zoom:50%;" />
+<img src="note.assets/image-20221123012552066.png" alt="image-20221123012552066" style="zoom:50%;" />
 
 #### 启用MSI功能
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012630392.png" alt="image-20221123012630392" style="zoom:50%;" />
+<img src="note.assets/image-20221123012630392.png" alt="image-20221123012630392" style="zoom:50%;" />
 
 #### 让CPU识别MSI
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123012658594.png" alt="image-20221123012658594" style="zoom:50%;" />
+<img src="note.assets/image-20221123012658594.png" alt="image-20221123012658594" style="zoom:50%;" />
 
 # SATA
 
@@ -531,7 +531,7 @@ Frame Information Structure
 
 SATA标准定义了如下的FIS:
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123185813992.png" alt="image-20221123185813992" style="zoom:50%;" />
+<img src="note.assets/image-20221123185813992.png" alt="image-20221123185813992" style="zoom:50%;" />
 
 ### LBA与CHS
 
@@ -540,17 +540,17 @@ SATA 控制器将物理扇区映射到逻辑扇区
 
 ### DMA读扇区
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123190410586.png" alt="image-20221123190410586" style="zoom:50%;" />
+<img src="note.assets/image-20221123190410586.png" alt="image-20221123190410586" style="zoom:50%;" />
 
 ### DMA写扇区
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123190432054.png" alt="image-20221123190432054" style="zoom:50%;" />
+<img src="note.assets/image-20221123190432054.png" alt="image-20221123190432054" style="zoom:50%;" />
 
 ### SATA对SCSI的封装: PACKET命令
 
 SATA 协议使用 PACKET 命令，对 SCSI 命令进行封装，而后由SATA 控制器使用 SCSI 协议进行转发
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123192105565.png" alt="image-20221123192105565" style="zoom:50%;" />
+<img src="note.assets/image-20221123192105565.png" alt="image-20221123192105565" style="zoom:50%;" />
 
 ## AHCI
 
@@ -558,7 +558,7 @@ SATA 协议使用 PACKET 命令，对 SCSI 命令进行封装，而后由SATA �
 是对 SATA 协议的一个更高层抽象。
 每个 SATA 控制器对应到 AHCI 的一个端口上。
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123192417728.png" alt="image-20221123192417728" style="zoom:50%;" />
+<img src="note.assets/image-20221123192417728.png" alt="image-20221123192417728" style="zoom:50%;" />
 
 ### AHCI与SATA的通讯
 
@@ -579,7 +579,7 @@ AHCI 的标准要求软件至少执行以下几个步骤（ 10.1.2 ），以完�
 
 需要映射寄存器到虚拟内存
 
-<img src="/media/routhleck/Windows-SSD/Users/Routhleck/Documents/GitHub/myOS/note.assets/image-20221123193703723.png" alt="image-20221123193703723" style="zoom:50%;" />
+<img src="note.assets/image-20221123193703723.png" alt="image-20221123193703723" style="zoom:50%;" />
 
 ## SLAB分配器
 
